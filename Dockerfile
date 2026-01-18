@@ -1,6 +1,9 @@
 # Global variable declaration:
 # Build to serve under Subdirectory BASE_URL if provided, eg: "ARG BASE_URL=/pdf/", otherwise leave blank: "ARG BASE_URL="
 ARG BASE_URL=
+ARG SITE_URL=https://bentopdf.com
+ARG VITE_USE_CDN=false
+ARG SIMPLE_MODE=false
 
 # Build stage
 FROM node:20-alpine AS builder
@@ -24,7 +27,14 @@ ENV COMPRESSION_MODE=$COMPRESSION_MODE
 
 # global arg to local arg
 ARG BASE_URL
+ARG SITE_URL
+ARG SIMPLE_MODE
+ARG VITE_USE_CDN
+
 ENV BASE_URL=$BASE_URL
+ENV SITE_URL=$SITE_URL
+ENV SIMPLE_MODE=$SIMPLE_MODE
+ENV VITE_USE_CDN=$VITE_USE_CDN
 
 RUN if [ -z "$BASE_URL" ]; then \
     npm run build -- --mode production; \

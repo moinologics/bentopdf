@@ -1,0 +1,54 @@
+applicationName: pdf-tool
+
+deployment:
+  image:
+    repository: moinologics/bentopdf-simple:v1.16.0
+    pullPolicy: IfNotPresent
+  replicas: 1
+  containerSecurityContext:
+    runAsNonRoot: true
+    readOnlyRootFilesystem: false
+  resources:
+    limits:
+      memory: 512Mi
+      cpu: 250m
+    requests:
+      memory: 64Mi
+      cpu: 50m
+  ports:
+    - name: http
+      protocol: TCP
+      containerPort: 8080
+  env:
+    SIMPLE_MODE:
+      value: "true"
+    VITE_USE_CDN:
+      value: "true"
+
+service:
+  ports:
+    - name: http
+      port: 80
+      protocol: TCP
+      targetPort: 8080
+
+ingress:
+  enabled: true
+  ingressClassName: nginx
+  hosts:
+    - host: pdf.easytool.qzz.io
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: pdf-tool-tls
+      hosts:
+        - pdf.easytool.qzz.io
+  annotations:
+    cert-manager.io/private-key-rotation-policy: Always
+    cert-manager.io/cluster-issuer: letsencrypt
+
+autoscaling:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 3
